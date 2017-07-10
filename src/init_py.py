@@ -6,18 +6,18 @@ import csv
 import os
 
 
-def init_Program(filename, x, y, numLines):
+def init_Program(filename, x, y, numLines, xCol, yCol):
     cmd = "make"
     os.system(cmd)
-    cmd = "./kmeansclustering " + filename + " " + x + " " + y + " " + str(numLines)
+    cmd = "./kmeansclustering " + filename + " " + x + " " + y + " " + str(numLines) + " " + str(xCol) + " " + str(yCol)
     os.system(cmd)
 
     
-def parse(filename, x, y):
+def parse(filename, x, y, xCol, yCol):
     cmd = "wc -l <" + filename
     numLines = int(os.popen(cmd).read()[:-1])
     print numLines
-    init_Program(filename, x, y, numLines)
+    init_Program(filename, x, y, numLines, xCol, yCol)
     
     
 def user_params():
@@ -34,18 +34,24 @@ def user_params():
     while inpFlag[0] == False and inpFlag[1] == False:
         x = raw_input("Input X field: ")
         y = raw_input ("Input Y field: ")
-        f = open(filename, "r+")
+        f = open(filename, "rU")
         reader = csv.reader(f)
         headers = reader.next()
+        count = 0
         for i in headers:
             if x == i:
+                xCol = count
                 inpFlag[0] = True
             if y == i:
                 inpFlag[1] = True
+                yCol = count
+            count=count+1
         if inpFlag[0] == False or inpFlag[1] == False:
             inpFlag = (False, False)
             print "error, one of the specified fields does not exist"
-    parse(filename, x, y)
+    print xCol      # to get x Col to save
+    print yCol      # to get y Col to save
+    parse(filename, x, y, xCol, yCol)
 
     
 user_params()
