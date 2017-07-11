@@ -25,7 +25,8 @@ int main(int argc, char *argv[]) {
     auto numLines = std::stoi(argv[4]);
     auto xCol = std::stoi(argv[5]);
     auto yCol = std::stoi(argv[6]);
-
+    auto headerCount = std::stoi(argv[7]);
+    
     fprintf(stdout, "%d \n", xCol);
     fprintf(stdout, "%d \n", yCol);
 
@@ -44,22 +45,18 @@ int main(int argc, char *argv[]) {
             Tokenizer tokenizer(line);
             int count = 0;
 
-              for (Tokenizer::iterator iter = tokenizer.begin(); (iter != tokenizer.end()) && (count < 9); ++iter)
+              for (Tokenizer::iterator iter = tokenizer.begin(); (iter != tokenizer.end()) && (count < headerCount); ++iter)
             {
                 if ((count == xCol) || (count == yCol))   //prints Col 0 and Col 2 when I put values 0 and 2 here?
                 {
-                    std::cout << *iter;
-                    if (count == xCol)
-                    {
-                        std::cout << "\t";
-                    }
+                    std::cout << *iter << "\t";
+                    
                 }
                 ++count;
             }
             std::cout << "\n";
         }
     }
-
 
     
     // while (std::getline(inputFile, line)) {
