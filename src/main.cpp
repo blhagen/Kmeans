@@ -7,6 +7,7 @@
 #include <sstream>
 #include <iostream>
 #include <string>
+#include <stdio.h>
 #include <boost/tokenizer.hpp>
 #include <boost/lockfree/queue.hpp>
 
@@ -49,10 +50,10 @@ int main(int argc, char *argv[]) {
             for (Tokenizer::iterator iter = tokenizer.begin(); (iter != tokenizer.end()) && (count < headerCount); ++iter){
                 if (count == xCol){
                     //std::cout << *iter << "\t";
-                    xx.bounded_push(*iter);
+                    xx.bounded_push(atof(*iter));
                 }
                 if (count == yCol){
-                    yy.bounded_push(*iter);
+                    yy.bounded_push(atof(*iter));
                 }
                 ++count;
             }
