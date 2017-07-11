@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <boost/tokenizer.hpp>
+#include <boost/lockfree/queue.hpp>
 
 int main(int argc, char *argv[]) {
 
@@ -32,8 +33,8 @@ int main(int argc, char *argv[]) {
 
      /* find way to only parse x, y header columns into vectors*/
 
-    std::vector<double> xx;
-    std::vector<double> yy;
+    boost::lockfree::queue<double> xx(numLines);
+    boost::lockfree::queue<double> yy(numLines);
     std::ifstream inputFile(argv[1]);
 
     if (inputFile.is_open()){
@@ -45,33 +46,19 @@ int main(int argc, char *argv[]) {
             Tokenizer tokenizer(line);
             int count = 0;
 
-              for (Tokenizer::iterator iter = tokenizer.begin(); (iter != tokenizer.end()) && (count < headerCount); ++iter)
-            {
-                if ((count == xCol) || (count == yCol))   //prints Col 0 and Col 2 when I put values 0 and 2 here?
-                {
-                    std::cout << *iter << "\t";
-                    
+            for (Tokenizer::iterator iter = tokenizer.begin(); (iter != tokenizer.end()) && (count < headerCount); ++iter){
+                if (count == xCol){
+                    //std::cout << *iter << "\t";
+                    xx.bounded_push(*iter);
+                }
+                if (count == yCol){
+                    yy.bounded_push(*iter);
                 }
                 ++count;
             }
-            std::cout << "\n";
+            //std::cout << "\n";
         }
     }
-
-    
-    // while (std::getline(inputFile, line)) {
-    //     std::stringstream lineStream(line);
-    //     std::string cell;
-
-    //     while (std::getline(lineStream, cell, ',')) {
-
-    //     }
-
-    // }
-
-    
-
-
 
 
     return 0;
