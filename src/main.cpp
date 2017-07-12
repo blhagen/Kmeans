@@ -10,9 +10,22 @@
 #include <stdio.h>
 #include <boost/tokenizer.hpp>
 #include <boost/lockfree/queue.hpp>
+#include <boost/lexical_cast.hpp>
+//#include <omp.h>
+//#define NUMT 2
 
 int main(int argc, char *argv[]) {
-
+    /*
+    #ifndef _OPENMP
+        fprintf(stderr, "OpenMP is not supported here -- sorry.\n");
+        return 1;
+    #endif
+    omp_set_num_threads(NUMT);
+    fprintf(stderr, "Using %d threads\n", NUMT);
+    */
+    
+    using boost::lexical_cast;
+    using boost::bad_lexical_cast;
     /*
      * DEBUG
      */
@@ -37,9 +50,11 @@ int main(int argc, char *argv[]) {
     boost::lockfree::queue<double> xx(numLines);
     boost::lockfree::queue<double> yy(numLines);
     std::ifstream inputFile(argv[1]);
-
     if (inputFile.is_open()){
-        std::string line;
+        std::string headerLine;			//create variable for header line
+	    std::getline(inputFile, headerLine);	//getline to remove header line in .csv
+	    std:: string line;
+//#pragma omp parallel for default(none)
         while (std::getline(inputFile, line)){
             typedef boost::escaped_list_separator<char> Separator;
             typedef boost::tokenizer<Separator> Tokenizer;
@@ -47,17 +62,28 @@ int main(int argc, char *argv[]) {
             Tokenizer tokenizer(line);
             int count = 0;
 
-            for (Tokenizer::iterator iter = tokenizer.begin(); (iter != tokenizer.end()) && (count < headerCount); ++iter){
+            for (const auto &t : tokenizer){
                 if (count == xCol){
-                    //std::cout << *iter << "\t";
-                    xx.bounded_push(atof(*iter));
+                    std::cout << t << "\t";
+                    try {
+                        xx.bounded_push(lexical_cast<double>(t));
+                    }
+                    catch (const bad_lexical_cast& e){
+                        std::cout << "Exception: " << e.what() << "\n";
+                    }
                 }
                 if (count == yCol){
-                    yy.bounded_push(atof(*iter));
+                    try {
+                        std::cout << t << "\t";
+                        yy.bounded_push(lexical_cast<double>(t));
+                    }
+                    catch (const bad_lexical_cast& e) {
+                        std::cout << "Exception: " << e.what() << "\n";
+                    }
                 }
                 ++count;
             }
-            //std::cout << "\n";
+            std::cout << "\n";
         }
     }
 
