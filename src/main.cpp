@@ -52,8 +52,9 @@ int main(int argc, char *argv[]) {
     std::ifstream inputFile(argv[1]);
     if (inputFile.is_open()){
         std::string headerLine;			//create variable for header line
-	    std::getline(inputFile, headerLine);	//getline to remove header line in .csv
-	    std:: string line;
+        std::getline(inputFile, headerLine);	//getline to remove header line in .csv
+        std:: string line;
+        std::string line;
 //#pragma omp parallel for default(none)
         while (std::getline(inputFile, line)){
             typedef boost::escaped_list_separator<char> Separator;
