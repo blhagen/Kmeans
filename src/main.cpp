@@ -11,16 +11,24 @@
 #include <boost/tokenizer.hpp>
 #include <boost/lockfree/queue.hpp>
 #include <boost/lexical_cast.hpp>
+//#include <omp.h>
+//#define NUMT 2
 
 int main(int argc, char *argv[]) {
-
     /*
-     * DEBUG
-     */
+    #ifndef _OPENMP
+        fprintf(stderr, "OpenMP is not supported here -- sorry.\n");
+        return 1;
+    #endif
+    omp_set_num_threads(NUMT);
+    fprintf(stderr, "Using %d threads\n", NUMT);
+    */
     
     using boost::lexical_cast;
     using boost::bad_lexical_cast;
-    
+    /*
+     * DEBUG
+     */
     fprintf(stdout, "%d arguments.\n", argc - 1);
     for (int i = 0; i < argc - 1; i++) {
         int ct = i + 1;
@@ -42,9 +50,9 @@ int main(int argc, char *argv[]) {
     boost::lockfree::queue<double> xx(numLines);
     boost::lockfree::queue<double> yy(numLines);
     std::ifstream inputFile(argv[1]);
-
     if (inputFile.is_open()){
         std::string line;
+//#pragma omp parallel for default(none)
         while (std::getline(inputFile, line)){
             typedef boost::escaped_list_separator<char> Separator;
             typedef boost::tokenizer<Separator> Tokenizer;
