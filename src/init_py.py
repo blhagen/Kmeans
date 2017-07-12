@@ -49,7 +49,8 @@ def user_params():
             count=count+1
             totalHeaderCount = totalHeaderCount + 1
         if inpFlag[0] == False or inpFlag[1] == False:
-            inpFlag = (False, False)
+            inpFlag[0] = False 
+            inpFlag[1] = False
             print "error, one of the specified fields does not exist"
     print xCol      # to get x Col to save
     print yCol      # to get y Col to save
