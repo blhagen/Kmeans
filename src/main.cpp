@@ -10,12 +10,17 @@
 #include <stdio.h>
 #include <boost/tokenizer.hpp>
 #include <boost/lockfree/queue.hpp>
+#include <boost/lexical_cast.hpp>
 
 int main(int argc, char *argv[]) {
 
     /*
      * DEBUG
      */
+    
+    using boost::lexical_cast;
+    using boost::bad_lexical_cast;
+    
     fprintf(stdout, "%d arguments.\n", argc - 1);
     for (int i = 0; i < argc - 1; i++) {
         int ct = i + 1;
@@ -47,17 +52,28 @@ int main(int argc, char *argv[]) {
             Tokenizer tokenizer(line);
             int count = 0;
 
-            for (Tokenizer::iterator iter = tokenizer.begin(); (iter != tokenizer.end()) && (count < headerCount); ++iter){
+            for (const auto &t : tokenizer){
                 if (count == xCol){
-                    //std::cout << *iter << "\t";
-                    xx.bounded_push(atof(*iter));
+                    std::cout << t << "\t";
+                    try {
+                        xx.bounded_push(lexical_cast<double>(t));
+                    }
+                    catch (const bad_lexical_cast& e){
+                        std::cout << "Exception: " << e.what() << "\n";
+                    }
                 }
                 if (count == yCol){
-                    yy.bounded_push(atof(*iter));
+                    try {
+                        std::cout << t << "\t";
+                        yy.bounded_push(lexical_cast<double>(t));
+                    }
+                    catch (const bad_lexical_cast& e) {
+                        std::cout << "Exception: " << e.what() << "\n";
+                    }
                 }
                 ++count;
             }
-            //std::cout << "\n";
+            std::cout << "\n";
         }
     }
 
